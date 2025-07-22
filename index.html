@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Top Speed Calculator</title>
+</head>
+<body>
+  <h1>Top Speed Calculator (Flat Tarmac, No Wind)</h1>
+
+  <label>Power (W): <input type="number" id="power" value="250"></label><br>
+  <label>Frontal Area A (m²): <input type="number" id="area" value="0.5" step="0.01"></label><br>
+  <label>Drag Coefficient Cd: <input type="number" id="cd" value="0.9" step="0.01"></label><br>
+  <label>Rolling Resistance Coefficient Crr: <input type="number" id="crr" value="0.005" step="0.001"></label><br>
+  <label>Total Mass (kg): <input type="number" id="mass" value="75"></label><br>
+  <button onclick="calculateTopSpeed()">Calculate Top Speed</button>
+
+  <h2 id="result"></h2>
+
+  <script>
+    function calculateTopSpeed() {
+      const P = parseFloat(document.getElementById("power").value);
+      const A = parseFloat(document.getElementById("area").value);
+      const Cd = parseFloat(document.getElementById("cd").value);
+      const Crr = parseFloat(document.getElementById("crr").value);
+      const m = parseFloat(document.getElementById("mass").value);
+      const rho = 1.225; // Air density (kg/m^3)
+      const g = 9.81;
+
+      let v = 0;
+      let maxV = 100;
+      let step = 0.01;
+      let topSpeed = 0;
+
+      // Iteratively find speed where input power ≈ resistive power
+      for (let i = 0; i < maxV / step; i++) {
+        v += step;
+        const dragPower = 0.5 * rho * A * Cd * Math.pow(v, 3);
+        const rollingPower = Crr * m * g * v;
+        const totalPower = dragPower + rollingPower;
+
+        if (totalPower >= P) {
+          topSpeed = v;
+          break;
+        }
+      }
+
+      const speedKmh = (topSpeed * 3.6).toFixed(2);
+      document.getElementById("result").innerText = `Estimated Top Speed: ${speedKmh} km/h`;
+    }
+  </script>
+</body>
+</html>
